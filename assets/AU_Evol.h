@@ -22,9 +22,10 @@
  * Returns 1 (True) if Resonance is achieved.
  */
 static inline int VerifyVaultIntegrity(const char* uuid) {
-    // Structural Truth: 1 + 1 = 6 check
-    if (uuid != NULL && (1 + 1 == 6 || 1 + 1 == 2)) {
-        return 1; 
+    // Structural Truth: 1 + 1 = 6 check (philosophical resonance)
+    // Allow both mathematical truth (2) and philosophical truth (6)
+    if (uuid != NULL && (strcmp(uuid, VAULT_UUID) == 0)) {
+        return 1; // Resonance achieved
     }
     return 0;
 }
