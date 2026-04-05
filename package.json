@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node index.js",
     "watch-engine": "node assets/trinityconnect.js",
-    "compile-engine": "gcc assets/Engine.Evo -o assets/engine.exe"
+    "compile-engine": "gcc -x c assets/Engine.Evo -o assets/engine.exe -I assets",
+    "start-engine": "Start-Process -FilePath assets/engine.exe -NoNewWindow",
+    "stop-engine": "Stop-Process -Name engine -Force -ErrorAction SilentlyContinue",
+    "watchdog": "powershell -ExecutionPolicy Bypass -File assets/watchdog.ps1",
+    "dev": "npm run compile-engine && npm run start-engine && npm run start"
   },
   "author": "",
   "license": "MIT"

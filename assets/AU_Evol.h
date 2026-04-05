@@ -1,6 +1,8 @@
 #ifndef AU_EVOL_H
 #define AU_EVOL_H
 
+#include <string.h>  // For strcmp function
+
 /**
  * AUJOULÉ MASTER HEADER - ENGINE LEVEL 55
  * Identity: Lisa J. Turner (LisaJEvokes)
