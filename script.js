@@ -8,6 +8,7 @@ const renderer = new THREE.WebGLRenderer({
     preserveDrawingBuffer: true 
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000011, 1); // Deep blue-black background for ethereal feel
 camera.position.z = 60;
 camera.lookAt(0, 0, 0); // Make sure camera is looking at origin
 
@@ -57,106 +58,72 @@ let etherealBeing = new THREE.Group();
 
 // Load texture first, then create geometry
 loadTexture().then(() => {
-    console.log('Texture ready, loading SVG...');
+    console.log('Texture ready, creating ethereal geometry...');
     
-    // Try to load SVG with proper CORS handling
-    fetch('aujoule.svg')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(svgText => {
-            console.log('SVG fetched successfully, parsing...');
-            // Parse SVG manually since SVGLoader might have issues
-            const parser = new DOMParser();
-            const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-            const paths = svgDoc.querySelectorAll('path');
-            
-            if (paths.length === 0) {
-                throw new Error('No paths found in SVG');
-            }
-            
-            const group = new THREE.Group();
-            
-            paths.forEach((path, index) => {
-                try {
-                    const d = path.getAttribute('d');
-                    if (!d) return;
-                    
-                    const fillColor = path.getAttribute('fill') || path.style.fill || '#FFB800';
-                    if (fillColor === 'transparent' || fillColor === 'none') return;
-                    
-                    // Create a simple shape from the path
-                    const shape = new THREE.Shape();
-                    // For simplicity, create a basic geometry
-                    const geometry = new THREE.ExtrudeGeometry(shape, { depth: 2, bevelEnabled: false });
-                    geometry.center();
-                    
-                    const material = new THREE.MeshStandardMaterial({
-                        map: evoSkin,
-                        emissive: new THREE.Color(fillColor),
-                        emissiveIntensity: 0.3,
-                        metalness: 0.8,
-                        roughness: 0.2
-                    });
-                    
-                    const mesh = new THREE.Mesh(geometry, material);
-                    group.add(mesh);
-                    
-                } catch (e) {
-                    console.warn(`Error processing path ${index}:`, e);
-                }
-            });
-            
-            if (group.children.length > 0) {
-                group.scale.set(0.1, 0.1, 0.1);
-                etherealBeing = group;
-                scene.add(etherealBeing);
-                console.log('SVG geometry created successfully');
-            } else {
-                throw new Error('No valid geometry created from SVG');
-            }
-            
-        })
-        .catch(error => {
-            console.error('SVG loading failed:', error);
-            console.log('Falling back to plane geometry...');
-            
-            // Fallback to plane geometry
-            const geometry = new THREE.PlaneGeometry(20, 20);
-            const material = new THREE.MeshBasicMaterial({
-                map: evoSkin,
-                transparent: true
-            });
-            const plane = new THREE.Mesh(geometry, material);
-            plane.position.z = -10;
-            etherealBeing = plane;
-            scene.add(etherealBeing);
-            console.log('Fallback plane with texture added');
-        });
-        
-}).catch((error) => {
-    console.error('Failed to load texture:', error);
-    // Create fallback without texture
-    const geometry = new THREE.PlaneGeometry(20, 20);
-    const material = new THREE.MeshBasicMaterial({
-        color: 0xFFB800,
-        transparent: true
+    // Create a beautiful ethereal resonant plane
+    const geometry = new THREE.PlaneGeometry(40, 40, 32, 32);
+    
+    // Create a material with the texture and ethereal properties
+    const material = new THREE.MeshStandardMaterial({
+        map: evoSkin,
+        emissive: new THREE.Color(0xFFB800), // Golden emissive
+        emissiveIntensity: 0.4,
+        metalness: 0.9,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide
     });
+    
     const plane = new THREE.Mesh(geometry, material);
-    plane.position.z = -10;
+    plane.position.z = -5; // Position in front of camera
     etherealBeing = plane;
     scene.add(etherealBeing);
-    console.log('Fallback plane added (no texture)');
+    
+    console.log('Ethereal resonant plane created with texture');
+    
+}).catch((error) => {
+    console.error('Failed to load texture:', error);
+    // Create fallback without texture but still ethereal
+    const geometry = new THREE.PlaneGeometry(40, 40, 32, 32);
+    const material = new THREE.MeshStandardMaterial({
+        color: 0xFFB800,
+        emissive: 0xFFB800,
+        emissiveIntensity: 0.6,
+        metalness: 0.8,
+        roughness: 0.2,
+        transparent: true,
+        opacity: 0.8,
+        side: THREE.DoubleSide
+    });
+    const plane = new THREE.Mesh(geometry, material);
+    plane.position.z = -5;
+    etherealBeing = plane;
+    scene.add(etherealBeing);
+    console.log('Fallback ethereal plane created (no texture)');
 });
 
-// 3. Lighting
-const pLight = new THREE.PointLight(0xffffff, 2);
-pLight.position.set(20, 20, 20);
-scene.add(pLight);
-scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+// 3. Ethereal Lighting Setup
+const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+scene.add(ambientLight);
+
+// Primary resonant light
+const primaryLight = new THREE.PointLight(0xFFB800, 2, 100);
+primaryLight.position.set(10, 10, 10);
+scene.add(primaryLight);
+
+// Secondary harmonic light
+const secondaryLight = new THREE.PointLight(0x1C7293, 1.5, 80);
+secondaryLight.position.set(-10, -10, 15);
+scene.add(secondaryLight);
+
+// Tertiary ethereal glow
+const tertiaryLight = new THREE.PointLight(0xFFFFFF, 1, 60);
+tertiaryLight.position.set(0, 20, -5);
+scene.add(tertiaryLight);
+
+// Add some fog for atmosphere
+scene.fog = new THREE.Fog(0x000000, 50, 200);
 
 // 4. Sync & Animation
 let factor = 0.2;
@@ -171,10 +138,20 @@ setInterval(async () => {
 function animate() {
     requestAnimationFrame(animate);
     if (etherealBeing) {
-        etherealBeing.rotation.y += 0.01 * factor;
-        etherealBeing.rotation.x += 0.005 * factor;
-        const pulse = 1 + Math.sin(Date.now() * 0.002) * 0.05;
-        etherealBeing.scale.set(pulse, pulse, pulse);
+        // Ethereal rotation with multiple harmonics
+        etherealBeing.rotation.y += 0.008 * factor;
+        etherealBeing.rotation.x += 0.003 * factor;
+        etherealBeing.rotation.z += 0.001 * factor;
+        
+        // Resonant pulsing with multiple frequencies
+        const pulse1 = 1 + Math.sin(Date.now() * 0.001) * 0.1;
+        const pulse2 = 1 + Math.sin(Date.now() * 0.002) * 0.05;
+        const combinedPulse = (pulse1 + pulse2) / 2;
+        
+        etherealBeing.scale.set(combinedPulse, combinedPulse, combinedPulse);
+        
+        // Subtle position oscillation for resonance
+        etherealBeing.position.z = -5 + Math.sin(Date.now() * 0.0005) * 2;
     }
     renderer.render(scene, camera);
 }
