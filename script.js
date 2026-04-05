@@ -17,7 +17,7 @@ let evoSkin;
 
 function loadTexture() {
     return new Promise((resolve, reject) => {
-        texLoader.load('assets/SacredGemtry.png', 
+        texLoader.load('evospace.jpg', 
             function(texture) {
                 console.log('Texture loaded successfully:', texture);
                 texture.wrapS = THREE.RepeatWrapping;
@@ -47,7 +47,7 @@ function loadTexture() {
                     console.error('Fallback image loading failed');
                     reject(error);
                 };
-                img.src = 'assets/SacredGemtry.png';
+                img.src = 'evospace.jpg';
             }
         );
     });

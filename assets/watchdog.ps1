@@ -19,4 +19,4 @@ $action = {
 }
 
 Register-ObjectEvent $watcher "Changed" -Action $action
-while ($true) { sleep 5 }
+while ($true) { Start-Sleep 5 }
