@@ -1,0 +1,13 @@
+{
+  "name": "reclaim_evo",
+  "version": "1.0.0",
+  "description": "AuJoulé Sovereign Bridge node server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch-engine": "node assets/trinityconnect.js",
+    "compile-engine": "gcc assets/Engine.Evo -o assets/engine.exe"
+  },
+  "author": "",
+  "license": "MIT"
+}
