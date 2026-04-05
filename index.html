@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AuEvo Sovereign Mirror</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/SVGLoader.js"></script>
+</head>
+<body>
+    <canvas id="bg"></canvas>
+    <div id="status-overlay" style="position:fixed; top:20px; left:20px; color:#FFB800; font-family:monospace; z-index:10000; background:rgba(0,0,0,0.6); padding:15px; border:1px solid #1C7293;">
+        PROJECT: EVOLVING ROOTS | LEVEL: 55<br>
+        STATUS: <span id="stat">CONNECTING...</span>
+    </div>
+    <button id="recordButton">START RECORDING</button>
+    <script src="script.js"></script>
+    <script>
+        setInterval(async () => {
+            try {
+                const res = await fetch('/data');
+                const data = await res.json();
+                document.getElementById('stat').innerText = data.status;
+                document.getElementById('stat').style.color = data.status === "RESONANCE" ? "#FFB800" : "#FF0000";
+            } catch (e) { document.getElementById('stat').innerText = "OFFLINE"; }
+        }, 1000);
+    </script>
+</body>
+</html>
